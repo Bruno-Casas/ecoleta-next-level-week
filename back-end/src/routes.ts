@@ -6,7 +6,7 @@ import pointsController from './controllers/pointsController';
 
 const routes = express.Router();
 
-routes.get('/itens',itensController.index);
+routes.get('/itens', itensController.index);
 routes.get('/points', pointController.index);
 routes.get('/points/:id', pointsController.show);
 routes.post('/points', pointController.create);

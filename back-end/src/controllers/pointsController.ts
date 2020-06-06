@@ -8,9 +8,9 @@ export default {
 		const parsedItens = String(itens)
 			.split(',')
 			.map(item => Number(item.trim()));
-
+			
 		const points = await knex('points')
-			.join('itens_point', 'point_id', '=', 'itens_point.point_id')
+			.join('itens_point', 'points.id', '=', 'itens_point.point_id')
 			.whereIn('itens_point.item_id', parsedItens)
 			.where('city', String(city))
 			.where('uf', String(uf))
@@ -28,7 +28,8 @@ export default {
 		if (!point)
 			return response.status(400).json({ message: 'Point not found.' });
 
-		const itens = await knex('itens').join('itens_point', 'itens_id', '=', 'itens_point.item_id')
+		const itens = await knex('itens')
+			.join('itens_point', 'itens.id', '=', 'itens_point.item_id')
 			.where('itens_point.point_id', id)
 			.select('itens.title');
 
@@ -39,31 +40,30 @@ export default {
 		const {
 			name,
 			email,
-			whtasapp,
+			whatsapp,
 			latitude,
 			longitude,
 			city,
 			uf,
-			itens
+			items
 		} = req.body;
 
 		const point = {
 			image: 'image-mock',
 			name,
 			email,
-			whtasapp,
+			whatsapp,
 			latitude,
 			longitude,
 			city,
 			uf,
-			itens
 		}
 
 		const trx = await knex.transaction();
 		const insertedIds = await trx('points').insert(point);
 
 		const point_id = insertedIds[0];
-		const pointItens = itens.map((item_id: Number) => {
+		const pointItens = items.map((item_id: Number) => {
 			return {
 				item_id,
 				point_id
